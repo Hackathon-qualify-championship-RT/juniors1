@@ -1,37 +1,15 @@
 import django.db.models
 
 
-class User(django.db.models.Model):
-    name = django.db.models.CharField(
-        max_length=150,
-        verbose_name="название",
-    )
-    password = django.db.models.CharField(
-        max_length=150,
-        verbose_name="название",
-    )
-
-    def set_password(self, raw_password):
-        super().set_password(raw_password)
-
-    class Meta:
-        verbose_name = "пользователь"
-        verbose_name_plural = "пользователи"
-
-    def __str__(self):
-        return self.name[:15]
-
-
 class Survey(django.db.models.Model):
     name = django.db.models.CharField(
         max_length=150,
         verbose_name="название",
     )
     user = django.db.models.ForeignKey(
-        User,
-        on_delete=django.db.models.CASCADE,
-        verbose_name="пользователь",
-        related_name="catalog_users",
+        django.conf.settings.AUTH_USER_MODEL,
+        on_delete=django.db.models.SET_NULL,
+        null=True,
     )
     is_published = django.db.models.BooleanField(
         default=False,
