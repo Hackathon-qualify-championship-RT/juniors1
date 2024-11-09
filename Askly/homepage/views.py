@@ -8,8 +8,8 @@ import catalog.models
 
 def homepage_main(request):
     template_name = "homepage/main.html"
-    items = catalog.models.Item.objects.published()
-    content = {"items": items, "title": "Каталог"}
+    # items = catalog.models.Item.objects.published()
+    content = {"title": "Каталог"}
     return django.shortcuts.render(request, template_name, content)
 
 

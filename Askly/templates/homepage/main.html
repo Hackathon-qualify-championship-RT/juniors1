@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-primary text-white p-5 rounded-3 shadow-sm">
+    <h1 class="display-4">Добро пожаловать в Askly!</h1>
+    <p class="lead">Askly — это простой инструмент для создания и прохождения опросов, позволяющий вам получать мгновенные отзывы о школьных мероприятиях и других событиях.</p>
+    <hr class="my-4">
+    <p>С помощью Askly вы можете легко создать опрос, собрать анонимные ответы, а также скачать результаты для анализа.</p>
+    <a class="btn btn-light btn-lg mt-3" href="" role="button">Пройти опрос</a>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 text-center">
+        <i class="bi bi-bar-chart-fill icon-feature text-primary mb-3"></i>
+        <h5>Простота в использовании</h5>
+        <p>Создавайте опросы за несколько кликов без сложных настроек и лишних действий.</p>
+    </div>
+    <div class="col-md-4 text-center">
+        <i class="bi bi-shield-lock-fill icon-feature text-primary mb-3"></i>
+        <h5>Анонимные ответы</h5>
+        <p>Мы обеспечиваем конфиденциальность ответов и безопасное хранение данных.</p>
+    </div>
+    <div class="col-md-4 text-center">
+        <i class="bi bi-download icon-feature text-primary mb-3"></i>
+        <h5>Экспорт результатов</h5>
+        <p>Скачивайте результаты опросов в удобном формате для дальнейшего анализа.</p>
+    </div>
+</div>
+{% endblock %}
