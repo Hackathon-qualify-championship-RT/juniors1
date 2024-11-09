@@ -31,47 +31,15 @@ class RegistrationView(django.views.View):
         form = users.forms.SignUpForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = django.conf.settings.DEFAULT_USER_IS_ACTIVE
+            user.is_active = True
             user.save()
 
-            users.models.Profile.objects.create(
-                user=user,
-            )
-
-            signer = django.core.signing.TimestampSigner()
-            signed_username = signer.sign(user.username)
-            activate_link = request.build_absolute_uri(
-                django.urls.reverse(
-                    "users:activate",
-                    kwargs={"signed_username": signed_username},
+            django.contrib.messages.success(
+                request,
+                translation.gettext_lazy(
+                    "Вы зарегистрированы. Войдите с новыми данными",
                 ),
             )
-
-            django.core.mail.send_mail(
-                subject="Активация профиля",
-                message=django.template.loader.render_to_string(
-                    "users/activation_email.txt",
-                    {"activate_link": activate_link},
-                ),
-                from_email=django.conf.settings.EMAIL_HOST,
-                recipient_list=[form.cleaned_data["email"]],
-            )
-
-            if django.conf.settings.DEFAULT_USER_IS_ACTIVE:
-                django.contrib.messages.success(
-                    request,
-                    translation.gettext_lazy(
-                        "Вы зарегистрированы. Войдите с новыми данными",
-                    ),
-                )
-            else:
-                django.contrib.messages.warning(
-                    request,
-                    translation.gettext_lazy(
-                        "Вам необходимо активировать Ваш профиль. "
-                        "Проверьте указанную почту",
-                    ),
-                )
 
             return django.shortcuts.redirect("users:login")
 
