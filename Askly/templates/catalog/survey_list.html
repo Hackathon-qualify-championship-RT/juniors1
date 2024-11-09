@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{% with category_name="category_name" %}
+  <div class="container">
+    <h2>Опросы</h2>
+    <div class="card-group">
+      {% for survey in surveys %}
+      <div>
+        <div class="card" style="width: 80rem;margin: 10px">
+          <div class="card-body">
+            <h5 class="card-title">{{ survey.name }}</h5>
+            <a href="{% url 'catalog:survey_detail' pk=survey.id %}"
+               class="btn btn-primary">Подробнее</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p>У вас еще нет опросов</p>
+      {% endfor %}
+    </div>
+    <a href="/catalog/create/" class="btn btn-primary">Новый опрос</a>
+  </div>
+{% endwith %}
+{% endblock %}

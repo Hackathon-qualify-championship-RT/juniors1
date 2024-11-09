@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block title %}Товар{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        {{ form.as_p }}
+      </div>
+      <input type="submit" class="btn btn-primary" value="Сохранить">
+    </form>
+
+    {% for response in only_responses %}
+    <h5>{{ response.question }}</h5>
+    {% if response.is_free %}
+    <b>Правильный ответ {{ response.answer }}</b>
+    {% else %}
+    <b>Свободный вопрос</b>
+    {% endif %}
+    <a href="/catalog/{{ survey.id }}/1/{{ response.id }}">Удалить</a>
+    {% endfor %}
+
+    {% for response in multiple_response %}
+    <h5>{{ response.question }}</h5>
+    <b>Несколько вариантов ответов</b>
+    {% if response.is_free == False %}
+    <b>(Свободный ответ)</b>
+    {% endif %}
+    <a href="/catalog/{{ survey.id }}/2/{{ response.id }}">Удалить</a>
+    {% endfor %}
+    <a href="/catalog/{{ survey.id }}/1/new">Новый одиночный вопрос</a>
+    <a href="/catalog/{{ survey.id }}/2/new">Новый многовариантный вопрос</a>
+  </div>
+{% endblock %}

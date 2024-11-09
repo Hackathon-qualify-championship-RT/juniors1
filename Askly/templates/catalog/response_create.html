@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+
+    {% for hidden_field in form.hidden_fields %}
+        {{ hidden_field }}
+    {% endfor %}
+
+    <div class="mb-3">
+        <label for="{{ form.question.id_for_label }}" class="form-label">{{ form.question.label }}</label>
+        {{ form.question }}
+    </div>
+    <div class="mb-3">
+        <label for="{{ form.is_free.id_for_label }}" class="form-label">{{ form.is_free.label }}</label>
+        {{ form.is_free }}
+    </div>
+    <div class="mb-3" id="answer-field" style="display: none;">
+        <label for="{{ form.answer.id_for_label }}" class="form-label">{{ form.answer.label }}</label>
+        {{ form.answer }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+<script>
+    function toggleAnswerField() {
+        const isFreeField = document.getElementById('{{ form.is_free.id_for_label }}');
+        const answerField = document.getElementById('answer-field');
+        answerField.style.display = isFreeField.value === "True" ? 'block' : 'none';
+    }
+    document.getElementById('{{ form.is_free.id_for_label }}').addEventListener('change', toggleAnswerField);
+    document.addEventListener('DOMContentLoaded', toggleAnswerField);
+</script>
+
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<form method="post" id="question-form">
+    {% csrf_token %}
+
+    <h2>Создать новый вопрос</h2>
+
+    <label for="question">Вопрос:</label>
+    <input type="text" id="question" name="question" required>
+
+    <label for="is_free">Свободный ответ:</label>
+    <select name="is_free" class="form-control" id="id_is_free">
+      <option value="True" selected>Да</option>
+      <option value="False">Нет</option>
+    </select>
+
+    <label for="answer-count">Количество вариантов ответа:</label>
+    <input type="number" min="1" max="10" id="answer-count" value="2" required>
+
+    <div id="answer-options"></div>
+
+    <button type="submit">Сохранить вопрос</button>
+</form>
+
+<script>
+    function createAnswerFields(count, isFree) {
+        const container = document.getElementById('answer-options');
+        container.innerHTML = '';
+
+        for (let i = 0; i < count; i++) {
+            const answerField = document.createElement('div');
+            answerField.classList.add('answer-field');
+            answerField.innerHTML = `
+                <h5 for="answer-${i}">Вариант ${i + 1}</h5>
+                <input type="text" name="answers" id="answer-${i}" required>
+                <label>
+                    <input type="checkbox" name="is_right" class="is-right-checkbox" ${isFree ? '' : 'disabled'}>
+                    Правильный ответ
+                </label>
+            `;
+            container.appendChild(answerField);
+
+            const checkboxes = document.querySelectorAll('.is-right-checkbox');
+            const labels = document.querySelectorAll('.answer-field label');
+
+            if (isFree) {
+                checkboxes.forEach(checkbox => checkbox.disabled = false);
+                labels.forEach(label => label.style.display = 'block');
+            } else {
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                });
+                labels.forEach(label => label.style.display = 'none');
+            }
+        }
+    }
+
+    let isFree = document.getElementById('id_is_free').value === 'True';
+
+    document.getElementById('answer-count').addEventListener('change', (event) => {
+        const count = parseInt(event.target.value, 10) || 1;
+        createAnswerFields(count, isFree);
+    });
+
+    document.getElementById('id_is_free').addEventListener('change', (event) => {
+        isFree = event.target.value === 'True';
+        const checkboxes = document.querySelectorAll('.is-right-checkbox');
+        const labels = document.querySelectorAll('.answer-field label');
+
+        if (isFree) {
+            checkboxes.forEach(checkbox => checkbox.disabled = false);
+            labels.forEach(label => label.style.display = 'block');
+        } else {
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                checkbox.disabled = true;
+            });
+            labels.forEach(label => label.style.display = 'none');
+        }
+    });
+
+    // Инициализация полей с количеством вариантов и состоянием "Свободного ответа"
+    createAnswerFields(parseInt(document.getElementById('answer-count').value, 10), isFree);
+</script>
+
+{% endblock %}

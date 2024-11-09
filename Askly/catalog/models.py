@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 import django.conf
 import django.db.models
 
@@ -26,6 +28,9 @@ class Survey(django.db.models.Model):
         unique=True,
     )
 
+    def clean(self, *args, **kwargs):
+        self.slug = str(uuid4())[:8]
+
     class Meta:
         verbose_name = "опрос"
         verbose_name_plural = "опросы"
@@ -43,6 +48,8 @@ class Answer(django.db.models.Model):
         Survey,
         on_delete=django.db.models.CASCADE,
         verbose_name="опрос",
+        null=True,
+        blank=True,
     )
     text = django.db.models.TextField(
         verbose_name="ответ",
@@ -61,6 +68,8 @@ class OnlyResponse(django.db.models.Model):
         Survey,
         on_delete=django.db.models.CASCADE,
         verbose_name="опрос",
+        null=True,
+        blank=True,
     )
     question = django.db.models.CharField(
         max_length=150,
@@ -87,6 +96,8 @@ class MultipleResponse(django.db.models.Model):
         Survey,
         on_delete=django.db.models.CASCADE,
         verbose_name="опрос",
+        null=True,
+        blank=True,
     )
     question = django.db.models.CharField(
         max_length=150,

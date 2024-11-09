@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Обратная связь{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        {{ form.as_p }}
+      </div>
+      <input type="submit" class="btn btn-primary" value="Создать">
+    </form>
+  </div>
+{% endblock %}
