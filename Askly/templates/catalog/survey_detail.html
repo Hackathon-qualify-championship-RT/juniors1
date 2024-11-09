@@ -33,6 +33,8 @@
     {% endfor %}
     <a href="/catalog/{{ survey.id }}/1/new">Новый одиночный вопрос</a>
     <a href="/catalog/{{ survey.id }}/2/new">Новый многовариантный вопрос</a>
+
+    <h4>Код опроса: <a href="/catalog/survey/{{ survey.slug }}">{{ survey.slug }}</a></h4>
     {% if graphic %}
         <h5>Распределение ответов</h5>
         <img src="data:image/png;base64,{{ graphic }}" alt="График ответов" />
