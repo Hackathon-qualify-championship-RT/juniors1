@@ -1,3 +1,4 @@
+import django.conf
 import django.db.models
 
 
