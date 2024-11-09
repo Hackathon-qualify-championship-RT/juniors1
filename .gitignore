@@ -9,6 +9,8 @@ __pycache__/
 # Игнорировать папку media
 media/
 
+pyproject.toml
+
 send_mail/
 
 # Distribution / packaging
