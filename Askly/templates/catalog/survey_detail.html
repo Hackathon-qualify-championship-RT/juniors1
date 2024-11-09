@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% load static %}
-{% block title %}Товар{% endblock %}
+{% block title %}Информация о опросе{% endblock %}
 
 {% block content %}
   <div class="container">
@@ -33,5 +33,11 @@
     {% endfor %}
     <a href="/catalog/{{ survey.id }}/1/new">Новый одиночный вопрос</a>
     <a href="/catalog/{{ survey.id }}/2/new">Новый многовариантный вопрос</a>
+    {% if graphic %}
+        <h5>Распределение ответов</h5>
+        <img src="data:image/png;base64,{{ graphic }}" alt="График ответов" />
+    {% endif %}
+
+    <a href="/catalog/{{ survey.id }}/download">Скачать все ответы</a>
   </div>
 {% endblock %}

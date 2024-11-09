@@ -1,7 +1,12 @@
+import base64
+
 import django.db.models
-import django.http
+from django.http import HttpResponse
 import django.shortcuts
 import django.utils
+
+import matplotlib.pyplot as plt
+from io import BytesIO
 
 import catalog.forms
 import catalog.models
@@ -20,12 +25,39 @@ def survey_list(request):
     content = {"surveys": surveys, "title": "Опросы"}
     return django.shortcuts.render(request, template_name, content)
 
+def create_response_chart(survey_id):
+    survey = catalog.models.Survey.objects.get(id=survey_id)
+    only_responses = catalog.models.OnlyResponse.objects.filter(survey=survey)
+    multiple_responses = catalog.models.MultipleResponse.objects.filter(survey=survey)
+
+    questions = [response.question for response in only_responses] + \
+                [response.question for response in multiple_responses]
+    response_counts = [
+        catalog.models.Answer.objects.filter(survey_id=survey_id, text__contains=response.question).count()
+        for response in only_responses
+    ] + [
+        catalog.models.AnswerOption.objects.filter(response=response).count()
+        for response in multiple_responses
+    ]
+
+    fig, ax = plt.subplots()
+    ax.pie(response_counts, labels=questions, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+
+    graphic = base64.b64encode(image_png).decode('utf-8')
+    return graphic
+
 
 def survey_detail(request, pk):
     template_name = "catalog/survey_detail.html"
     user = request.user
     form = catalog.forms.SurveyForm(request.POST or None)
-
     survey = django.shortcuts.get_object_or_404(
         catalog.models.Survey.objects,
         user_id=user.id,
@@ -40,17 +72,18 @@ def survey_detail(request, pk):
         return django.shortcuts.redirect("catalog:survey_list")
 
     only_responses = catalog.models.OnlyResponse.objects.filter(
-        survey_id=survey.id,
-    )
+        survey_id=survey.id)
     multiple_response = catalog.models.MultipleResponse.objects.filter(
-        survey_id=survey.id,
-    )
+        survey_id=survey.id)
+
+    graphic = create_response_chart(pk)
 
     content = {
         "form": form,
         "survey": survey,
         "only_responses": only_responses,
         "multiple_response": multiple_response,
+        "graphic": graphic,
     }
     return django.shortcuts.render(request, template_name, content)
 
@@ -161,6 +194,115 @@ def survey_response_new_multi(request, survey_id):
                 is_right=is_right
             )
 
-        return django.shortcuts.redirect(
-            'catalog:survey_list')  # Перенаправление на страницу списка опросов
+        return django.shortcuts.redirect('catalog:survey_list')
     return django.shortcuts.render(request, template_name)
+
+
+def survey_answer_open(request):
+    template_name = "catalog/survey_answer_open.html"
+    form = catalog.forms.SurveySlugForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        slug = form.cleaned_data["slug"]
+        return django.shortcuts.redirect("catalog:survey_answer_form",
+                                         slug=slug)
+
+    content = {
+        "form": form,
+    }
+
+    return django.shortcuts.render(request, template_name, content)
+
+
+def survey_answer_form(request, slug):
+    template_name = "catalog/survey_answer_form.html"
+
+    try:
+        survey = catalog.models.Survey.objects.get(
+            slug=slug,
+            is_published=True,
+        )
+    except catalog.models.Survey.DoesNotExist:
+        return HttpResponse("Не найден опрос")
+
+    only_response = catalog.models.OnlyResponse.objects.filter(
+        survey_id=survey.id,
+    )
+
+    multi_response = catalog.models.MultipleResponse.objects.filter(
+        survey_id=survey.id,
+    )
+
+    answer = catalog.models.Answer()
+    if request.method == "POST":
+        if not survey.is_anonymous:
+            answer.name = request.POST.get("user_name")
+
+        answer_text = "Открытые вопросы\n"
+        for response in only_response:
+            user_answer = request.POST.get(f"only_response_{response.id}")
+            answer_text += response.question + ": " + user_answer
+            if not response.is_free:
+                if response.answer == user_answer:
+                    answer_text += " +"
+                else:
+                    answer_text += " -"
+            answer_text += "\n"
+
+        answer_text += "\n"
+
+        answer_text += "Закрытые вопросы\n"
+        for response in multi_response:
+            options = catalog.models.AnswerOption.objects.filter(
+                response_id=response.id,
+            )
+            answer_text += response.question + "\n"
+            for option in options:
+                option_text = request.POST.get(
+                    f"multi_response_{response.id}_{option.id}")
+
+                if option_text:
+                    answer_text += f"{option.answer}: on"
+                else:
+                    answer_text += f"{option.answer}: off"
+                if not response.is_free:
+                    if bool(option_text) == option.is_right:
+                        answer_text += " +\n"
+                    else:
+                        answer_text += " -\n"
+
+            answer_text += "\n"
+        answer.text = answer_text
+        answer.survey = survey
+        answer.save()
+        return HttpResponse("Спасибо за пройденный опрос!")
+
+    content = {
+        "title": survey.name,
+        "is_anonymous": survey.is_anonymous,
+        "only_response": only_response,
+        "multi_response": multi_response,
+    }
+
+    return django.shortcuts.render(request, template_name, content)
+
+
+def survey_download(request, survey_id):
+    answers = catalog.models.Answer.objects.filter(
+        survey_id=survey_id,
+    )
+
+    text_answer = ""
+
+    for answer in answers:
+        answer_name = ""
+        if answer.name:
+            answer_name = f"{answer.name}: "
+        text_answer += f"{answer_name}{answer.text}\n\n"
+
+    response = HttpResponse(content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename="results.txt"'
+
+    response.write(text_answer)
+
+    return response

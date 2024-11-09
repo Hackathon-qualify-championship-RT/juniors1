@@ -10,7 +10,7 @@
 
         <!-- Navigation Links -->
         <nav class="d-flex align-items-center">
-            <a href="" class="nav-link">Пройти опрос</a>
+            <a href="{% url 'catalog:survey_answer_open' %}" class="nav-link">Пройти опрос</a>
 
             {% if user.is_authenticated %}
                 <a href="{% url 'catalog:survey_create' %}" class="nav-link">Создать опрос</a>

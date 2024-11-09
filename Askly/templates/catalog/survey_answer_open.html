@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block title %}Открытие формы{% endblock %}
+
+{% block content %}
+  <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        {{ form.as_p }}
+      </div>
+      <input type="submit" class="btn btn-primary" value="Отправить">
+    </form>
+{% endblock %}

@@ -11,4 +11,7 @@ urlpatterns = [
     path("<int:survey_id>/2/<int:response_id>/", views.survey_delete_multi, name="survey_delete_multi"),
     path("<int:survey_id>/1/new/", views.survey_response_new_only, name="survey_response_new_only"),
     path("<int:survey_id>/2/new/", views.survey_response_new_multi, name="survey_response_new_multi"),
+    path("survey/open/", views.survey_answer_open, name="survey_answer_open"),
+    path("survey/<str:slug>/", views.survey_answer_form, name="survey_answer_form"),
+    path("<int:survey_id>/download/", views.survey_download, name="survey_download"),
 ]

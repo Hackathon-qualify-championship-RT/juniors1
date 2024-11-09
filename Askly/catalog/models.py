@@ -36,13 +36,15 @@ class Survey(django.db.models.Model):
         verbose_name_plural = "опросы"
 
     def __str__(self):
-        return self.name[:15]
+        return self.name
 
 
 class Answer(django.db.models.Model):
     name = django.db.models.CharField(
         max_length=150,
         verbose_name="имя",
+        null=True,
+        blank=True,
     )
     survey = django.db.models.ForeignKey(
         Survey,
@@ -60,7 +62,7 @@ class Answer(django.db.models.Model):
         verbose_name_plural = "ответы"
 
     def __str__(self):
-        return self.name[:15]
+        return self.name
 
 
 class OnlyResponse(django.db.models.Model):
@@ -88,7 +90,7 @@ class OnlyResponse(django.db.models.Model):
         verbose_name_plural = "одиночные вопросы"
 
     def __str__(self):
-        return self.name[:15]
+        return self.question
 
 
 class MultipleResponse(django.db.models.Model):
@@ -116,7 +118,7 @@ class MultipleResponse(django.db.models.Model):
         verbose_name_plural = "многовариантные вопросы"
 
     def __str__(self):
-        return self.name[:15]
+        return self.question
 
 
 class AnswerOption(django.db.models.Model):
@@ -139,4 +141,4 @@ class AnswerOption(django.db.models.Model):
         verbose_name_plural = "варианты ответа"
 
     def __str__(self):
-        return self.name[:15]
+        return self.answer
