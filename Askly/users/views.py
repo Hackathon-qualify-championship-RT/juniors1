@@ -12,7 +12,6 @@ import django.template.loader
 import django.urls
 import django.utils.encoding
 import django.utils.http
-import django.utils.translation as translation
 import django.views
 import django.views.generic
 
@@ -36,9 +35,7 @@ class RegistrationView(django.views.View):
 
             django.contrib.messages.success(
                 request,
-                translation.gettext_lazy(
-                    "Вы зарегистрированы. Войдите с новыми данными",
-                ),
+                "Вы зарегистрированы. Войдите с новыми данными",
             )
 
             return django.shortcuts.redirect("users:login")
@@ -118,7 +115,7 @@ class ProfileView(
             request.session.modified = True
             django.contrib.messages.success(
                 request,
-                translation.gettext_lazy("Настройки сохранены."),
+                "Настройки сохранены."
             )
             return django.shortcuts.redirect("users:profile")
 

@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "catalog.apps.CatalogConfig",
     "homepage.apps.HomepageConfig",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
@@ -73,7 +74,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ru"
 
 TIME_ZONE = "UTC"
 
@@ -93,6 +94,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 LOGIN_URL = "/auth/login/"
 LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/auth/logout/"
+LOGOUT_URL = "/auth/logout/"
+LOGOUT_REDIRECT_URL = "/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
