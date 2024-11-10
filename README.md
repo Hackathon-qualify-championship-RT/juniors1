@@ -67,7 +67,7 @@ python manage.py runserver
 - Открываем терминал PowerShell от админа.
 - Вставляем и запускаем ``` Set-ExecutionPolicy RemoteSigned ```
 - На вопрос отвечаем ``` A ```
-- Обновляем полностью проект по инструкции README.md
+- Продолжаем запускать проект по инструкции README.md с ``` Создаём и активируем виртуальное окружение ```
 
 ### Видеодемонстрация проекта
 [Скачать видеодемонстрацию проекта](https://github.com/Hackathon-qualify-championship-RT/juniors1/raw/main/Askly_video.mp4)
