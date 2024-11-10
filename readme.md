@@ -61,4 +61,4 @@ python manage.py runserver
 ***Терминал не закрываем!***
 
 ### Видеодемонстрация проекта
-[Скачать видеодемонстрацию проекта]([https://github.com/Hackathon-qualify-championship-RT/juniors1/blob/main/Askly_video.mp4])
+[Скачать видеодемонстрацию проекта](https://github.com/Hackathon-qualify-championship-RT/juniors1/blob/main/Askly_video.mp4)
