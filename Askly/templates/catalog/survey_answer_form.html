@@ -4,36 +4,48 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="container">
-  <h2>{{ title }}</h2>
-  <form method="post">
+<div class="container my-5">
+  <h2 class="text-center mb-4 page-title">{{ title }}</h2>
+  <form method="post" class="form-survey p-5 rounded shadow-lg">
+    {% csrf_token %}
+
     {% if is_anonymous == False %}
-      <h5>Ваше имя</h5>
-      <input type="text" name="user_name" class="form-control" required>
+      <div class="mb-4 user-info">
+        <label for="user_name" class="form-label">
+          <i class="fas fa-user-circle"></i> Ваше имя
+        </label>
+        <input type="text" id="user_name" name="user_name" class="form-control input-field" placeholder="Введите ваше имя" required>
+      </div>
     {% endif %}
 
-    {% csrf_token %}
-    <div class="card-group">
+    <div class="question-section mb-5">
       {% for response in only_response %}
-      <div class="card">
+      <div class="card response-card mb-4">
         <div class="card-body">
-          <h5 class="card-title">{{ response.question }}</h5>
-          <input type="text" name="only_response_{{ response.id }}" class="form-control" required>
+          {% if response.is_free %}
+            <h5 class="card-title">Вопрос с правильным ответом</h5>
+          {% endif %}
+          <h5 class="card-title"><i class="fas fa-question-circle"></i> {{ response.question }}</h5>
+          <input type="text" name="only_response_{{ response.id }}" class="form-control input-field" placeholder="Ваш ответ" required>
         </div>
       </div>
       {% endfor %}
     </div>
 
-    <div class="card-group">
+    <div class="question-section mb-5">
       {% for response in multi_response %}
-      <div class="card">
+      <div class="card response-card mb-4">
+        {% if not response.is_free %}
+          <h5 class="card-title">Вопрос с правильным(-ми) ответом</h5>
+        {% endif %}
         <div class="card-body">
-          <h5 class="card-title">{{ response.question }}</h5>
+          <h5 class="card-title"><i class="fas fa-question-circle"></i> {{ response.question }}</h5>
           {% for option in response.catalog_responses.all %}
-            <div class="form-check">
+            <div class="form-check my-2">
+
               <input class="form-check-input" type="checkbox" name="multi_response_{{ response.id }}_{{ option.id }}" id="option_{{ option.id }}">
               <label class="form-check-label" for="option_{{ option.id }}">
-                {{ option.answer }}
+                <i class="fas fa-check-circle"></i> {{ option.answer }}
               </label>
             </div>
           {% endfor %}
@@ -42,7 +54,11 @@
       {% endfor %}
     </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Отправить</button>
+    <div class="text-center mt-5">
+      <button type="submit" class="btn btn-primary submit-btn">
+        <i class="fas fa-paper-plane"></i> Отправить
+      </button>
+    </div>
   </form>
 </div>
 {% endblock %}

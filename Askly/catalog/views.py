@@ -30,12 +30,10 @@ def create_response_chart(survey_id):
     survey = catalog.models.Survey.objects.get(id=survey_id)
 
     only_responses = catalog.models.OnlyResponse.objects.filter(survey=survey)
-    multiple_responses = catalog.models.MultipleResponse.objects.filter(
-        survey=survey)
+    multiple_responses = catalog.models.MultipleResponse.objects.filter(survey=survey)
 
     only_response_counts = [
-        catalog.models.Answer.objects.filter(survey_id=survey_id,
-                                             text__contains=response.question).count()
+        catalog.models.Answer.objects.filter(survey_id=survey_id, text__contains=response.question).count()
         for response in only_responses
     ]
 
@@ -48,28 +46,29 @@ def create_response_chart(survey_id):
         return None
 
     answers = catalog.models.Answer.objects.filter(survey=survey)
-    answer_text = ""
-    for answer in answers:
-        answer_text += answer.text
+    answer_text = "".join([answer.text for answer in answers])
 
     questions = ["Верные ответы", "Неверные ответы"]
-    response_counts = [
-        answer_text.count("+"),
-        answer_text.count("-"),
-    ]
+    response_counts = [answer_text.count("+"), answer_text.count("-")]
 
-    fig, ax = plt.subplots()
-    ax.pie(response_counts, labels=questions, autopct='%1.1f%%', startangle=90)
-    ax.axis('equal')
+    if not any(response_counts):
+        return None
 
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    image_png = buffer.getvalue()
-    buffer.close()
+    try:
+        fig, ax = plt.subplots()
+        ax.pie(response_counts, labels=questions, autopct='%1.1f%%', startangle=90)
+        ax.axis('equal')
 
-    graphic = base64.b64encode(image_png).decode('utf-8')
-    return graphic
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        image_png = buffer.getvalue()
+        buffer.close()
+
+        graphic = base64.b64encode(image_png).decode('utf-8')
+        return graphic
+    except ValueError:
+        return None
 
 
 def survey_detail(request, pk):
@@ -170,7 +169,7 @@ def survey_response_new_only(request, survey_id):
         response = form.save()
         response.survey = survey
         response.save()
-        return django.shortcuts.redirect("catalog:survey_list")
+        return django.shortcuts.redirect("catalog:survey_detail", pk=survey.pk)
 
     content = {
         "form": form,
@@ -211,7 +210,7 @@ def survey_response_new_multi(request, survey_id):
                 is_right=is_right
             )
 
-        return django.shortcuts.redirect('catalog:survey_list')
+        return django.shortcuts.redirect("catalog:survey_detail", pk=survey.pk)
     return django.shortcuts.render(request, template_name)
 
 
@@ -284,15 +283,15 @@ def survey_answer_form(request, slug):
                     f"multi_response_{response.id}_{option.id}")
 
                 if option_text:
-                    answer_text += f"{option.answer}: on"
+                    answer_text += f"{option.answer}: выбран"
                 else:
-                    answer_text += f"{option.answer}: off"
-                answer_text += "\n"
+                    answer_text += f"{option.answer}: не выбран"
                 if not response.is_free:
-                    if bool(option_text) == option.is_right:
-                        answer_text += " +\n"
-                    else:
-                        answer_text += " -\n"
+                    if option_text and bool(option_text) == option.is_right:
+                        answer_text += " +"
+                    elif option_text:
+                        answer_text += " -"
+                answer_text += "\n"
 
             answer_text += "\n"
         answer.text = answer_text
