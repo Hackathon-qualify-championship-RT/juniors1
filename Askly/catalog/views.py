@@ -350,3 +350,18 @@ def survey_download(request, survey_id):
     response.write(text_answer)
 
     return response
+
+
+def survey_del(request, survey_id):
+    user = request.user
+    try:
+        survey = catalog.models.Survey.objects.get(
+            user=user.id,
+            id=survey_id,
+        )
+    except catalog.models.Survey.DoesNotExist:
+        return django.shortcuts.redirect("catalog:survey_list")
+
+    survey.delete()
+
+    return django.shortcuts.redirect("catalog:survey_list")

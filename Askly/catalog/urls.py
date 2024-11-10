@@ -23,6 +23,11 @@ urlpatterns = [
         name="survey_response_new_only",
     ),
     path(
+        "<int:survey_id>/del/",
+        views.survey_del,
+        name="survey_response_new_multi",
+    ),
+    path(
         "<int:survey_id>/2/new/",
         views.survey_response_new_multi,
         name="survey_response_new_multi",
