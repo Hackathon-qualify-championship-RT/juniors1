@@ -11,6 +11,7 @@ main {
 footer {
     margin-top: auto;
 }
+
 .logo-icon {
     width: 40px;
     height: auto;
@@ -42,22 +43,9 @@ h5 {
     color: #333;
 }
 
-footer {
-    background-color: #f8f9fa;
-    padding: 20px 0;
-    text-align: center;
-}
-
 footer p {
     margin: 0;
     color: #6c757d;
-}
-
-.container {
-  max-width: 800px;
-  background-color: #f0f8ff;
-  padding: 30px;
-  border-radius: 15px;
 }
 
 .page-title {
