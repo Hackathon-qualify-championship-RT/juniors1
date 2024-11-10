@@ -4,27 +4,42 @@
 {% block title %}Новый вопрос{% endblock %}
 
 {% block content %}
-<form method="post" id="question-form">
-    {% csrf_token %}
+<div class="container my-5 p-4 border rounded bg-light shadow-lg">
+    <h2 class="text-center text-primary font-weight-bold mb-5">
+        <i class="fas fa-question-circle"></i> Создать новый вопрос
+    </h2>
 
-    <h2>Создать новый вопрос</h2>
+    <form method="post" id="question-form">
+        {% csrf_token %}
 
-    <label for="question">Вопрос:</label>
-    <input type="text" id="question" name="question" required>
+        <div class="form-group mb-4">
+            <label for="question" class="form-label">Вопрос:</label>
+            <input type="text" id="question" name="question" class="form-control" required>
+        </div>
 
-    <label for="is_free">Свободный ответ:</label>
-    <select name="is_free" class="form-control" id="id_is_free">
-      <option value="True" selected>Да</option>
-      <option value="False">Нет</option>
-    </select>
+        <div class="form-group mb-4">
+            <label for="id_is_free" class="form-label">Свободный ответ:</label>
+            <select name="is_free" class="form-control" id="id_is_free">
+                <option value="True" selected>Да</option>
+                <option value="False">Нет</option>
+            </select>
+        </div>
 
-    <label for="answer-count">Количество вариантов ответа:</label>
-    <input type="number" min="1" max="10" id="answer-count" value="2" required>
+        <div class="form-group mb-4">
+            <label for="answer-count" class="form-label">Количество вариантов ответа:</label>
+            <input type="number" min="1" max="10" id="answer-count" class="form-control" value="2" required>
+        </div>
 
-    <div id="answer-options"></div>
+        <div id="answer-options" class="mb-4"></div>
 
-    <button type="submit">Сохранить вопрос</button>
-</form>
+        <!-- Кнопка с иконкой и стилизацией -->
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-success btn-lg px-4 py-2">
+                <i class="fas fa-save"></i> Сохранить вопрос
+            </button>
+        </div>
+    </form>
+</div>
 
 <script>
     function createAnswerFields(count, isFree) {
@@ -33,11 +48,11 @@
 
         for (let i = 0; i < count; i++) {
             const answerField = document.createElement('div');
-            answerField.classList.add('answer-field');
+            answerField.classList.add('answer-field', 'mb-3');
             answerField.innerHTML = `
                 <h5 for="answer-${i}">Вариант ${i + 1}</h5>
-                <input type="text" name="answers" id="answer-${i}" required>
-                <label>
+                <input type="text" name="answers" id="answer-${i}" class="form-control" required>
+                <label class="mt-2">
                     <input type="checkbox" name="is_right" class="is-right-checkbox" ${isFree ? '' : 'disabled'}>
                     Правильный ответ
                 </label>
@@ -60,7 +75,7 @@
         }
     }
 
-    let isFree = document.getElementById('id_is_free').value === 'True';
+    let isFree = document.getElementById('id_is_free').value === 'False';
 
     document.getElementById('answer-count').addEventListener('change', (event) => {
         const count = parseInt(event.target.value, 10) || 1;
@@ -68,7 +83,7 @@
     });
 
     document.getElementById('id_is_free').addEventListener('change', (event) => {
-        isFree = event.target.value === 'True';
+        isFree = event.target.value === 'False';
         const checkboxes = document.querySelectorAll('.is-right-checkbox');
         const labels = document.querySelectorAll('.answer-field label');
 

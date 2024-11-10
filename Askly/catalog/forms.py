@@ -46,7 +46,7 @@ class OnlyResponseForm(django.forms.ModelForm):
     is_free = django.forms.TypedChoiceField(
         label="Свободный вопрос",
         coerce=lambda x: x == "True",
-        choices=((True, "Да"), (False, "Нет"))
+        choices=((True, "Нет"), (False, "Да"))
     )
 
     answer = django.forms.CharField(
@@ -82,7 +82,7 @@ class MultiResponseForm(django.forms.ModelForm):
     is_free = django.forms.TypedChoiceField(
         label="Свободный вопрос",
         coerce=lambda x: x == "True",
-        choices=((True, "Да"), (False, "Нет"))
+        choices=((True, "Нет"), (False, "Да"))
     )
 
     answer = django.forms.CharField(

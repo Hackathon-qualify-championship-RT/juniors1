@@ -4,42 +4,92 @@
 {% block title %}Информация о опросе{% endblock %}
 
 {% block content %}
-  <div class="container">
-    <form method="post">
+  <div class="container my-5 p-4 border rounded bg-light shadow-lg">
+
+    <h2 class="text-center mb-5 text-primary font-weight-bold">{{ survey.name }}</h2>
+
+    <form method="post" class="mb-4">
       {% csrf_token %}
-      <div class="mb-3">
+      <div class="form-group">
         {{ form.as_p }}
       </div>
-      <input type="submit" class="btn btn-primary" value="Сохранить">
+      <div class="text-center">
+        <input type="submit" class="btn btn-success btn-lg px-4 py-2 shadow-lg" value="Сохранить">
+      </div>
     </form>
 
-    {% for response in only_responses %}
-    <h5>{{ response.question }}</h5>
-    {% if response.is_free %}
-    <b>Правильный ответ {{ response.answer }}</b>
-    {% else %}
-    <b>Свободный вопрос</b>
-    {% endif %}
-    <a href="/catalog/{{ survey.id }}/1/{{ response.id }}">Удалить</a>
-    {% endfor %}
+    <div class="responses-section mb-5">
+      <h3 class="text-primary mb-4">
+        <i class="bi bi-question-circle"></i> Открытые вопросы
+      </h3>
+      {% for response in only_responses %}
+        <div class="p-4 border rounded mb-4 bg-white shadow-sm">
+          <h5 class="mb-3">{{ response.question }}</h5>
+          <p>
+            {% if response.is_free %}
+              <span class="badge bg-success"><i class="bi bi-check-circle"></i> Правильный ответ: {{ response.answer }}</span>
+            {% else %}
+              <span class="badge bg-info"><i class="bi bi-pencil"></i> Свободный вопрос</span>
+            {% endif %}
+          </p>
+          <form action="/catalog/{{ survey.id }}/1/{{ response.id }}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm" title="Удалить вопрос">
+              <i class="bi bi-trash"></i> Удалить
+            </button>
+          </form>
+        </div>
+      {% endfor %}
+      <div class="d-flex justify-content-center">
+        <a href="/catalog/{{ survey.id }}/1/new" class="btn btn-outline-primary btn-lg shadow-sm">
+          <i class="bi bi-plus-circle"></i> Новый открытый вопрос
+        </a>
+      </div>
+    </div>
 
-    {% for response in multiple_response %}
-    <h5>{{ response.question }}</h5>
-    <b>Несколько вариантов ответов</b>
-    {% if response.is_free == False %}
-    <b>(Свободный ответ)</b>
-    {% endif %}
-    <a href="/catalog/{{ survey.id }}/2/{{ response.id }}">Удалить</a>
-    {% endfor %}
-    <a href="/catalog/{{ survey.id }}/1/new">Новый одиночный вопрос</a>
-    <a href="/catalog/{{ survey.id }}/2/new">Новый многовариантный вопрос</a>
+    <div class="responses-section mb-5">
+      <h3 class="text-primary mb-4">
+        <i class="bi bi-list-ul"></i> Закрытые вопросы
+      </h3>
+      {% for response in multiple_response %}
+        <div class="p-4 border rounded mb-4 bg-white shadow-sm">
+          <h5 class="mb-3">{{ response.question }}</h5>
+          <p><span class="badge bg-secondary"><i class="bi bi-check-square"></i> Несколько вариантов ответов</span></p>
+          {% if response.is_free %}
+            <p><span class="badge bg-warning"><i class="bi bi-pencil"></i> Свободный ответ</span></p>
+          {% endif %}
+          <form action="/catalog/{{ survey.id }}/2/{{ response.id }}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm" title="Удалить вопрос">
+              <i class="bi bi-trash"></i> Удалить
+            </button>
+          </form>
+        </div>
+      {% endfor %}
+      <div class="d-flex justify-content-center">
+        <a href="/catalog/{{ survey.id }}/2/new" class="btn btn-outline-primary btn-lg shadow-sm">
+          <i class="bi bi-plus-circle"></i> Новый закрытый вопрос
+        </a>
+      </div>
+    </div>
 
-    <h4>Код опроса: <a href="/catalog/survey/{{ survey.slug }}">{{ survey.slug }}</a></h4>
+    <div class="survey-code-section mb-5 text-center">
+      <h4 class="text-muted"><i class="bi bi-barcode"></i> Код опроса:</h4>
+      <a href="/catalog/survey/{{ survey.slug }}" class="text-decoration-none h5 text-info">{{ survey.slug }}</a>
+    </div>
+
     {% if graphic %}
-        <h5>Распределение ответов</h5>
-        <img src="data:image/png;base64,{{ graphic }}" alt="График ответов" />
+      <div class="text-center mb-5">
+        <h5 class="text-success"><i class="bi bi-pie-chart"></i> Распределение ответов</h5>
+        <img src="data:image/png;base64,{{ graphic }}" alt="График ответов" class="img-fluid rounded shadow-lg">
+      </div>
     {% endif %}
 
-    <a href="/catalog/{{ survey.id }}/download">Скачать все ответы</a>
+    <div class="text-center mb-5">
+      <a href="/catalog/{{ survey.id }}/download" class="btn btn-primary btn-lg px-5 py-3 shadow-lg">
+        <i class="bi bi-download"></i> Скачать все ответы
+      </a>
+    </div>
+
   </div>
 {% endblock %}

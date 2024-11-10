@@ -25,19 +25,37 @@ def survey_list(request):
     content = {"surveys": surveys, "title": "Опросы"}
     return django.shortcuts.render(request, template_name, content)
 
+
 def create_response_chart(survey_id):
     survey = catalog.models.Survey.objects.get(id=survey_id)
-    only_responses = catalog.models.OnlyResponse.objects.filter(survey=survey)
-    multiple_responses = catalog.models.MultipleResponse.objects.filter(survey=survey)
 
-    questions = [response.question for response in only_responses] + \
-                [response.question for response in multiple_responses]
-    response_counts = [
-        catalog.models.Answer.objects.filter(survey_id=survey_id, text__contains=response.question).count()
+    only_responses = catalog.models.OnlyResponse.objects.filter(survey=survey)
+    multiple_responses = catalog.models.MultipleResponse.objects.filter(
+        survey=survey)
+
+    only_response_counts = [
+        catalog.models.Answer.objects.filter(survey_id=survey_id,
+                                             text__contains=response.question).count()
         for response in only_responses
-    ] + [
+    ]
+
+    multiple_response_counts = [
         catalog.models.AnswerOption.objects.filter(response=response).count()
         for response in multiple_responses
+    ]
+
+    if sum(only_response_counts) == 0 and sum(multiple_response_counts) == 0:
+        return None
+
+    answers = catalog.models.Answer.objects.filter(survey=survey)
+    answer_text = ""
+    for answer in answers:
+        answer_text += answer.text
+
+    questions = ["Верные ответы", "Неверные ответы"]
+    response_counts = [
+        answer_text.count("+"),
+        answer_text.count("-"),
     ]
 
     fig, ax = plt.subplots()
@@ -57,24 +75,23 @@ def create_response_chart(survey_id):
 def survey_detail(request, pk):
     template_name = "catalog/survey_detail.html"
     user = request.user
-    form = catalog.forms.SurveyForm(request.POST or None)
     survey = django.shortcuts.get_object_or_404(
         catalog.models.Survey.objects,
         user_id=user.id,
         pk=pk,
     )
+    form = catalog.forms.SurveyForm(request.POST or None, instance=survey)
 
     if form.is_valid() and request.method == "POST":
-        survey.name = form.cleaned_data["name"]
-        survey.is_published = form.cleaned_data["is_published"]
-        survey.is_anonymous = form.cleaned_data["is_anonymous"]
-        survey.save()
+        form.save()
         return django.shortcuts.redirect("catalog:survey_list")
 
     only_responses = catalog.models.OnlyResponse.objects.filter(
-        survey_id=survey.id)
+        survey_id=survey.id
+    )
     multiple_response = catalog.models.MultipleResponse.objects.filter(
-        survey_id=survey.id)
+        survey_id=survey.id
+    )
 
     graphic = create_response_chart(pk)
 
@@ -223,7 +240,12 @@ def survey_answer_form(request, slug):
             is_published=True,
         )
     except catalog.models.Survey.DoesNotExist:
-        return HttpResponse("Не найден опрос")
+        content = {
+            "text": "Не найден запрос :("
+        }
+        return django.shortcuts.render(request,
+                                       "catalog/response_answer_ok.html",
+                                       content)
 
     only_response = catalog.models.OnlyResponse.objects.filter(
         survey_id=survey.id,
@@ -242,8 +264,8 @@ def survey_answer_form(request, slug):
         for response in only_response:
             user_answer = request.POST.get(f"only_response_{response.id}")
             answer_text += response.question + ": " + user_answer
-            if not response.is_free:
-                if response.answer == user_answer:
+            if response.is_free:
+                if response.answer.lower() == user_answer.lower():
                     answer_text += " +"
                 else:
                     answer_text += " -"
@@ -265,6 +287,7 @@ def survey_answer_form(request, slug):
                     answer_text += f"{option.answer}: on"
                 else:
                     answer_text += f"{option.answer}: off"
+                answer_text += "\n"
                 if not response.is_free:
                     if bool(option_text) == option.is_right:
                         answer_text += " +\n"
@@ -275,8 +298,12 @@ def survey_answer_form(request, slug):
         answer.text = answer_text
         answer.survey = survey
         answer.save()
-        return HttpResponse("Спасибо за пройденный опрос!")
-
+        content = {
+            "text": "Спасибо за пройденный опрос!"
+        }
+        return django.shortcuts.render(request,
+                                       "catalog/response_answer_ok.html",
+                                       content)
     content = {
         "title": survey.name,
         "is_anonymous": survey.is_anonymous,
