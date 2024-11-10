@@ -69,6 +69,8 @@ python manage.py runserver
 - На вопрос отвечаем ``` A ```
 - Продолжаем запускать проект по инструкции README.md с ``` Создаём и активируем виртуальное окружение ```
 
+Если ошибка осталась, то продолжайте без активации venv\Scripts\activate 
+
 ### Видеодемонстрация проекта
 [Скачать видеодемонстрацию проекта](https://github.com/Hackathon-qualify-championship-RT/juniors1/raw/main/Askly_video.mp4)
 
