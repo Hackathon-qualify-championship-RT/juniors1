@@ -25,7 +25,7 @@ pip install -r requirements.txt
 #### Переходим в папку с manage.py
 
 ```
-cd lyceum
+cd askly
 ```
 
 #### Настраиваем миграции

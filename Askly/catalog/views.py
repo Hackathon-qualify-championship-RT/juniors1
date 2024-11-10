@@ -241,7 +241,7 @@ def survey_answer_form(request, slug):
         )
     except catalog.models.Survey.DoesNotExist:
         content = {
-            "text": "Не найден запрос :("
+            "text": "Не найден опрос :("
         }
         return django.shortcuts.render(request,
                                        "catalog/response_answer_ok.html",

@@ -135,11 +135,9 @@ AnswerOptionFormSet = django.forms.inlineformset_factory(
 class SurveySlugForm(django.forms.Form):
     slug = django.forms.CharField(
         label="текст",
-        help_text="Введите код опроса",
         widget=django.forms.TextInput(
             attrs={
                 "class": "form-control",
             },
         ),
     )
-    required_css_class = "form-control"
