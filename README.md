@@ -60,6 +60,15 @@ python manage.py runserver
 
 ***Терминал не закрываем!***
 
+### Возможные ошибки запуска
+#### В случае возникновения ошибки с venv\Scripts\activate 
+
+Решение проблемы:
+- Открываем терминал PowerShell от админа.
+- Вставляем и запускаем ``` Set-ExecutionPolicy RemoteSigned ```
+- На вопрос отвечаем ``` A ```
+- Обновляем полностью проект по инструкции README.md
+
 ### Видеодемонстрация проекта
 [Скачать видеодемонстрацию проекта](https://github.com/Hackathon-qualify-championship-RT/juniors1/raw/main/Askly_video.mp4)
 
