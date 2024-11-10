@@ -113,10 +113,7 @@ class ProfileView(
             profile_form.save()
             user_form.save()
             request.session.modified = True
-            django.contrib.messages.success(
-                request,
-                "Настройки сохранены."
-            )
+            django.contrib.messages.success(request, "Настройки сохранены.")
             return django.shortcuts.redirect("users:profile")
 
         context = {

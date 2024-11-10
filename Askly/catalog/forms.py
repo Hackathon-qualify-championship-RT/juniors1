@@ -1,6 +1,6 @@
 import django.forms
 
-from catalog.models import AnswerOption, Survey, OnlyResponse, MultipleResponse
+from catalog.models import AnswerOption, MultipleResponse, OnlyResponse, Survey
 
 
 class SurveyForm(django.forms.ModelForm):
@@ -12,12 +12,12 @@ class SurveyForm(django.forms.ModelForm):
     is_published = django.forms.TypedChoiceField(
         label="Публичный?",
         coerce=lambda x: x == "True",
-        choices=((True, "Да"), (False, "Нет"))
+        choices=((True, "Да"), (False, "Нет")),
     )
     is_anonymous = django.forms.TypedChoiceField(
         label="Анонимный?",
         coerce=lambda x: x == "True",
-        choices=((True, "Да"), (False, "Нет"))
+        choices=((True, "Да"), (False, "Нет")),
     )
 
     class Meta:
@@ -46,13 +46,13 @@ class OnlyResponseForm(django.forms.ModelForm):
     is_free = django.forms.TypedChoiceField(
         label="Свободный вопрос",
         coerce=lambda x: x == "True",
-        choices=((True, "Нет"), (False, "Да"))
+        choices=((True, "Нет"), (False, "Да")),
     )
 
     answer = django.forms.CharField(
         label="Правильный ответ",
         required=False,
-        widget=django.forms.TextInput(attrs={'class': 'form-control'})
+        widget=django.forms.TextInput(attrs={"class": "form-control"}),
     )
 
     class Meta:
@@ -82,13 +82,13 @@ class MultiResponseForm(django.forms.ModelForm):
     is_free = django.forms.TypedChoiceField(
         label="Свободный вопрос",
         coerce=lambda x: x == "True",
-        choices=((True, "Нет"), (False, "Да"))
+        choices=((True, "Нет"), (False, "Да")),
     )
 
     answer = django.forms.CharField(
         label="Правильный ответ",
         required=False,
-        widget=django.forms.TextInput(attrs={'class': 'form-control'})
+        widget=django.forms.TextInput(attrs={"class": "form-control"}),
     )
 
     class Meta:
@@ -112,7 +112,7 @@ class MultiResponseForm(django.forms.ModelForm):
 class AnswerOptionForm(django.forms.ModelForm):
     class Meta:
         model = AnswerOption
-        fields = ['answer', 'is_right']
+        fields = ["answer", "is_right"]
 
 
 MultipleResponseFormSet = django.forms.inlineformset_factory(
@@ -120,7 +120,7 @@ MultipleResponseFormSet = django.forms.inlineformset_factory(
     MultipleResponse,
     form=MultiResponseForm,
     extra=3,
-    can_delete=True
+    can_delete=True,
 )
 
 AnswerOptionFormSet = django.forms.inlineformset_factory(
@@ -128,7 +128,7 @@ AnswerOptionFormSet = django.forms.inlineformset_factory(
     AnswerOption,
     form=AnswerOptionForm,
     extra=2,
-    can_delete=True
+    can_delete=True,
 )
 
 
