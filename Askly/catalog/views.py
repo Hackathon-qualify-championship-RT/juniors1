@@ -300,7 +300,7 @@ def survey_answer_form(request, slug):
                     answer_text += f"{option.answer}: не выбран"
 
                 if not response.is_free:
-                    if option_text and bool(option_text) == option.is_right:
+                    if option_text and bool(option_text) != option.is_right:
                         answer_text += " +"
                     elif option_text:
                         answer_text += " -"
